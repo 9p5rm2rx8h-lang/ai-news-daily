@@ -7,22 +7,6 @@ from datetime import datetime
 from fetcher import NewsItem
 
 
-def _stock_arrow(change_pct: float) -> str:
-    if change_pct > 0:
-        return "🔴"
-    elif change_pct < 0:
-        return "🟢"
-    return "⚪"
-
-
-def _format_price(price: float, currency: str) -> str:
-    if currency == "HKD":
-        return f"HK${price:.2f}"
-    elif currency == "CNY":
-        return f"¥{price:.2f}"
-    return f"{currency} {price:.2f}"
-
-
 def render_news_section(category: str, items: list[NewsItem]) -> str:
     if not items:
         return f"""
@@ -57,43 +41,48 @@ def render_news_section(category: str, items: list[NewsItem]) -> str:
     """
 
 
-def render_stock_section(stocks: list[dict]) -> str:
-    if not stocks:
+def render_company_section(company_news: dict[str, list[NewsItem]]) -> str:
+    """渲染关注公司相关新闻板块"""
+    if not company_news or not any(company_news.values()):
         return ""
 
-    rows = ""
-    for s in stocks:
-        arrow = _stock_arrow(s["change_pct"])
-        price_str = _format_price(s["price"], s.get("currency", "HKD"))
-        change_str = f'{s["change"]:+.2f} ({s["change_pct"]:+.2f}%)'
-        error_note = ""
-        if s.get("error"):
-            error_note = f' <span class="error">（数据获取失败）</span>'
-        rows += f"""
-        <tr>
-            <td class="stock-name">{arrow} {s["name"]}</td>
-            <td class="stock-symbol">{s["symbol"]}</td>
-            <td class="stock-price">{price_str}</td>
-            <td class="stock-change {'up' if s['change_pct'] > 0 else 'down' if s['change_pct'] < 0 else ''}">{change_str}</td>
-            <td>{error_note}</td>
-        </tr>
+    sections = ""
+    for company_name, items in company_news.items():
+        if not items:
+            continue
+        
+        rows = ""
+        for i, item in enumerate(items, 1):
+            summary_html = f'<p class="summary">{item.summary}</p>' if item.summary else ""
+            source_tag = f'<span class="source">{item.source}</span>'
+            rows += f"""
+            <div class="news-item">
+                <div class="news-title">
+                    <span class="idx">{i}.</span>
+                    <a href="{item.link}" target="_blank">{item.title}</a>
+                    {source_tag}
+                </div>
+                {summary_html}
+            </div>
+            """
+
+        sections += f"""
+        <div class="company-block">
+            <h3 class="company-name">{company_name}</h3>
+            {rows}
+        </div>
         """
 
     return f"""
     <div class="category">
-        <h2>📊 关注股票</h2>
-        <table class="stock-table">
-            <thead>
-                <tr><th>名称</th><th>代码</th><th>现价</th><th>涨跌</th><th></th></tr>
-            </thead>
-            <tbody>{rows}</tbody>
-        </table>
+        <h2>🏢 关注动态</h2>
+        {sections}
     </div>
     """
 
 
-def generate_html(news_data: dict[str, list[NewsItem]], stocks: list[dict]) -> str:
-    """生成完整的 HTML 邮件"""
+def generate_html(news_data: dict[str, list[NewsItem]], company_news: dict[str, list[NewsItem]]) -> str:
+    """生成完整的 HTML 邮件（中文）"""
     now = datetime.now()
     date_str = now.strftime("%Y年%m月%d日")
     weekday = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"][now.weekday()]
@@ -105,8 +94,8 @@ def generate_html(news_data: dict[str, list[NewsItem]], stocks: list[dict]) -> s
         emoji = category_emojis.get(cat, "📰")
         news_sections += render_news_section(f"{emoji} {cat}", items)
 
-    # 股票板块
-    stock_section = render_stock_section(stocks)
+    # 公司动态板块
+    company_section = render_company_section(company_news)
 
     html = f"""
 <!DOCTYPE html>
@@ -161,14 +150,26 @@ def generate_html(news_data: dict[str, list[NewsItem]], stocks: list[dict]) -> s
     padding-bottom: 8px;
     margin-bottom: 14px;
   }}
+  .company-name {{
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f3460;
+    background: #f0f4ff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }}
+  .company-block {{
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }}
   .news-item {{
     margin-bottom: 12px;
     padding: 8px 0;
     border-bottom: 1px solid #f0f0f0;
   }}
-  .news-item:last-child {{
-    border-bottom: none;
-  }}
+  .news-item:last-child {{ border-bottom: none; }}
   .news-title {{
     font-size: 14px;
   }}
@@ -204,38 +205,6 @@ def generate_html(news_data: dict[str, list[NewsItem]], stocks: list[dict]) -> s
     font-size: 13px;
     font-style: italic;
   }}
-  .stock-table {{
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }}
-  .stock-table th {{
-    text-align: left;
-    padding: 8px 6px;
-    border-bottom: 2px solid #e8e8e8;
-    color: #666;
-    font-weight: 500;
-  }}
-  .stock-table td {{
-    padding: 8px 6px;
-    border-bottom: 1px solid #f0f0f0;
-  }}
-  .stock-name {{
-    font-weight: 500;
-  }}
-  .stock-symbol {{
-    color: #999;
-    font-size: 12px;
-  }}
-  .stock-price {{
-    font-weight: 500;
-  }}
-  .stock-change.up {{
-    color: #e74c3c;
-  }}
-  .stock-change.down {{
-    color: #2ecc71;
-  }}
   .error {{
     color: #e74c3c;
     font-size: 12px;
@@ -247,10 +216,7 @@ def generate_html(news_data: dict[str, list[NewsItem]], stocks: list[dict]) -> s
     color: #999;
     border-top: 1px solid #f0f0f0;
   }}
-  .footer a {{
-    color: #0f3460;
-    text-decoration: none;
-  }}
+  .footer a {{ color: #0f3460; text-decoration: none; }}
 </style>
 </head>
 <body>
@@ -261,7 +227,7 @@ def generate_html(news_data: dict[str, list[NewsItem]], stocks: list[dict]) -> s
   </div>
   <div class="content">
     {news_sections}
-    {stock_section}
+    {company_section}
   </div>
   <div class="footer">
     本简报由自动化系统生成 · 新闻版权归原作者所有

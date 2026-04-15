@@ -3,9 +3,10 @@
 from datetime import datetime
 
 from config import settings
-from fetcher import fetch_all_rss_news, fetch_stock_data
+from fetcher import fetch_all_rss_news, fetch_company_news
 from mailer import send_email
 from renderer import generate_html
+from translator import translate_news
 
 
 def run():
@@ -24,13 +25,25 @@ def run():
     for cat, items in news_data.items():
         print(f"   {cat}: {len(items)} 条")
 
-    # 2. 抓取股票数据
-    print("\n📈 查询股票行情...")
-    stocks = fetch_stock_data()
+    # 2. 翻译为中文（如果配置了 OpenAI）
+    if settings.OPENAI_API_KEY:
+        print("\n🌐 翻译为中文...")
+        news_data = translate_news(news_data)
 
-    # 3. 生成 HTML
+    # 3. 搜索关注公司相关新闻
+    print("\n🏢 搜索关注公司动态...")
+    company_news = fetch_company_news()
+    
+    # 翻译公司相关新闻
+    if settings.OPENAI_API_KEY:
+        # 把公司新闻也翻译
+        for company_name, items in company_news.items():
+            if items:
+                company_news[company_name] = translate_news({company_name: items})[company_name]
+
+    # 4. 生成 HTML
     print("\n🎨 生成简报...")
-    html = generate_html(news_data, stocks)
+    html = generate_html(news_data, company_news)
 
     # 保存到本地（备份）
     backup_path = f"/workspace/news-briefing/archive/briefing_{now.strftime('%Y%m%d')}.html"
@@ -43,7 +56,7 @@ def run():
     except Exception as e:
         print(f"⚠️  保存备份失败: {e}")
 
-    # 4. 发送邮件
+    # 5. 发送邮件
     date_str = now.strftime("%Y年%m月%d日")
     weekday = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"][now.weekday()]
     subject = f"📰 每日新闻简报 — {date_str} {weekday}"

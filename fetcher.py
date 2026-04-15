@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import feedparser
 import requests
@@ -54,12 +54,12 @@ RSS_SOURCES = {
     ],
 }
 
-# 股票关注列表
-STOCK_SYMBOLS = {
-    "腾讯": "0700.HK",
-    "泡泡玛特": "9992.HK",
-    "茅台": "600519.SS",
-    "中国神华": "601088.SS",
+# 关注的公司/关键词（用于搜索相关新闻）
+WATCHED_COMPANIES = {
+    "腾讯": ["Tencent", "腾讯"],
+    "泡泡玛特": ["Pop Mart", "泡泡玛特", "9992.HK"],
+    "茅台": ["Moutai", "Kweichow Moutai", "茅台", "600519.SS"],
+    "中国神华": ["China Shenhua Energy", "中国神华", "601088.SS"],
 }
 
 
@@ -74,18 +74,13 @@ def _fetch_rss(url: str, source_name: str, category: str, max_items: int = 10) -
             if not title or not link:
                 continue
             summary = entry.get("summary", "")
-            # 清理 HTML 标签
             if summary:
                 soup = BeautifulSoup(summary, "lxml")
                 summary = soup.get_text()[:300].strip()
             published = entry.get("published", "") or entry.get("updated", "")
             items.append(NewsItem(
-                title=title,
-                link=link,
-                source=source_name,
-                summary=summary,
-                published=published,
-                category=category,
+                title=title, link=link, source=source_name,
+                summary=summary, published=published, category=category,
             ))
     except Exception as e:
         print(f"  ⚠️  RSS 抓取失败 [{source_name}]: {e}")
@@ -100,8 +95,8 @@ def fetch_category_news(category: str, sources: list[dict]) -> list[NewsItem]:
         print(f"  📡 抓取: {src['name']} ({src['url'][:50]}...)")
         items = _fetch_rss(src["url"], src["name"], category, max_items=max_per_source)
         all_items.extend(items)
-        time.sleep(0.5)  # 礼貌性延迟
-    # 去重（按标题相似度）
+        time.sleep(0.5)
+    # 去重
     seen_titles = set()
     unique = []
     for item in all_items:
@@ -123,47 +118,100 @@ def fetch_all_rss_news() -> dict[str, list[NewsItem]]:
     return results
 
 
-# ===== 股市数据 =====
+# ===== 关注公司相关新闻 =====
 
-def fetch_stock_data() -> list[dict]:
-    """通过 Yahoo Finance 抓取股票行情"""
-    stocks = []
-    for name, symbol in STOCK_SYMBOLS.items():
-        print(f"  📈 查询: {name} ({symbol})")
+def _search_google_news(keywords: list[str], max_results: int = 5) -> list[NewsItem]:
+    """通过 Google News RSS 搜索特定关键词的相关新闻"""
+    items = []
+    query = " ".join(keywords)
+    # URL 编码
+    encoded_query = requests.utils.quote(query)
+    
+    # 尝试多个 Google News 搜索源
+    urls = [
+        f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en",
+        f"https://news.google.com/rss/search?q={encoded_query}&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+    ]
+    
+    for url in urls:
         try:
-            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1d&interval=1d"
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
-            resp = requests.get(url, headers=headers, timeout=10)
-            data = resp.json()
-            result = data["chart"]["result"][0]
-            meta = result["meta"]
+            feed = feedparser.parse(url)
+            for entry in feed.entries[:max_results]:
+                title = entry.get("title", "").strip()
+                link = entry.get("link", "").strip()
+                if not title or not link:
+                    continue
+                # 去掉 Google 重定向链接
+                if "&url=" in link:
+                    from urllib.parse import parse_qs, urlparse
+                    parsed = urlparse(link)
+                    qs = parse_qs(parsed.query)
+                    if "url" in qs:
+                        link = qs["url"][0]
 
-            current = meta.get("regularMarketPrice", 0)
-            prev = meta.get("chartPreviousClose", 0) or meta.get("previousClose", 0)
-            change = current - prev
-            change_pct = (change / prev * 100) if prev else 0
-            currency = meta.get("currency", "HKD")
+                summary = entry.get("summary", "")
+                if summary:
+                    soup = BeautifulSoup(summary, "lxml")
+                    summary = soup.get_text()[:200].strip()
 
-            stocks.append({
-                "name": name,
-                "symbol": symbol,
-                "price": current,
-                "change": change,
-                "change_pct": change_pct,
-                "currency": currency,
-            })
+                published = entry.get("published", "")
+                
+                # 标记来源为 Google News
+                source_tag = entry.get("source", {}).get("title", "") if isinstance(entry.get("source"), dict) else ""
+                source = source_tag or "Google News"
+                
+                items.append(NewsItem(
+                    title=title, link=link, source=source,
+                    summary=summary, published=published,
+                    category="关注动态",
+                ))
+            
+            if items:
+                break  # 成功获取到结果就不再尝试下一个源
+                
         except Exception as e:
-            print(f"  ⚠️  股票查询失败 [{name}]: {e}")
-            stocks.append({
-                "name": name,
-                "symbol": symbol,
-                "price": 0,
-                "change": 0,
-                "change_pct": 0,
-                "currency": "--",
-                "error": str(e),
-            })
-        time.sleep(0.3)
-    return stocks
+            print(f"    ⚠️ 搜索失败: {e}")
+            continue
+    
+    return items
+
+
+def fetch_company_news() -> dict[str, list[NewsItem]]:
+    """搜索所有关注公司的相关新闻"""
+    all_company_news = {}  # 公司名称 → 新闻列表
+    total = 0
+    
+    for company_name, keywords in WATCHED_COMPANIES.items():
+        print(f"  🔍 搜索 [{company_name}] 相关新闻 (关键词: {keywords})")
+        
+        # 先搜英文关键词，再搜中文关键词
+        en_keywords = [k for k in keywords if all(ord(c) < 128 for c in k)]
+        zh_keywords = [k for k in keywords if any(ord(c) > 128 for c in k)]
+        
+        items = []
+        
+        # 英文搜索
+        if en_keywords:
+            items.extend(_search_google_news(en_keywords, max_results=4))
+            time.sleep(0.5)
+        
+        # 中文搜索
+        if zh_keywords:
+            items.extend(_search_google_news(zh_keywords, max_results=4))
+            time.sleep(0.5)
+        
+        # 去重
+        seen_titles = set()
+        unique = []
+        for item in items:
+            key = re.sub(r"\s+", "", item.title.lower())[:40]
+            if key not in seen_titles:
+                seen_titles.add(key)
+                unique.append(item)
+        
+        all_company_news[company_name] = unique[:8]  # 每个公司最多8条
+        total += len(unique)
+        print(f"    ✅ 找到 {len(unique)} 条")
+    
+    print(f"\n📊 公司相关新闻总计: {total} 条")
+    return all_company_news

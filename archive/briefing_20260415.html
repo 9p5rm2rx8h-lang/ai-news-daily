@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: white;
+    padding: 32px 28px;
+    text-align: center;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .header .date {
+    margin-top: 8px;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  .content {
+    padding: 24px 28px;
+  }
+  .category {
+    margin-bottom: 28px;
+  }
+  .category h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a2e;
+    border-bottom: 2px solid #e8e8e8;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+  .news-item {
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .news-item:last-child {
+    border-bottom: none;
+  }
+  .news-title {
+    font-size: 14px;
+  }
+  .news-title .idx {
+    color: #999;
+    margin-right: 4px;
+  }
+  .news-title a {
+    color: #1a1a2e;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .news-title a:hover {
+    color: #0f3460;
+    text-decoration: underline;
+  }
+  .news-title .source {
+    font-size: 11px;
+    background: #f0f0f5;
+    color: #666;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 8px;
+  }
+  .summary {
+    font-size: 13px;
+    color: #666;
+    margin: 4px 0 0 20px;
+    line-height: 1.5;
+  }
+  .empty {
+    color: #999;
+    font-size: 13px;
+    font-style: italic;
+  }
+  .stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .stock-table th {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 2px solid #e8e8e8;
+    color: #666;
+    font-weight: 500;
+  }
+  .stock-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .stock-name {
+    font-weight: 500;
+  }
+  .stock-symbol {
+    color: #999;
+    font-size: 12px;
+  }
+  .stock-price {
+    font-weight: 500;
+  }
+  .stock-change.up {
+    color: #e74c3c;
+  }
+  .stock-change.down {
+    color: #2ecc71;
+  }
+  .error {
+    color: #e74c3c;
+    font-size: 12px;
+  }
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: #999;
+    border-top: 1px solid #f0f0f0;
+  }
+  .footer a {
+    color: #0f3460;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📰 每日新闻简报</h1>
+    <div class="date">2026年04月15日 周三</div>
+  </div>
+  <div class="content">
+    
+        <div class="category">
+            <h2>🌍 海外热点</h2>
+            <p class="empty">今日暂无相关新闻</p>
+        </div>
+        
+    <div class="category">
+        <h2>🤖 AI</h2>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">1.</span>
+                <a href="https://www.theverge.com/ai-artificial-intelligence/911778/ai-violence-sam-altman-home" target="_blank">The attacks on Sam Altman are a warning for the AI world</a>
+                <span class="source">The Verge AI</span>
+            </div>
+            <p class="summary">Before allegedly throwing a Molotov cocktail at OpenAI CEO Sam Altman's home, the 20-year-old accused attacker wrote about his fear that the AI race would cause humans to go extinct, the San Francisco Chronicle found. Two days later, Altman's home appeared to be targeted a second time, according to</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">2.</span>
+                <a href="https://www.theverge.com/tech/911658/google-chrome-gemini-ai-skills-availability-launch" target="_blank">Chrome now lets you turn AI prompts into repeatable &#8216;Skills&#8217;</a>
+                <span class="source">The Verge AI</span>
+            </div>
+            <p class="summary">Google is launching a new Chrome workflow feature that allows you to reuse your favorite Gemini commands across multiple webpages. Any AI prompts can now be saved as "Skills" in the Chrome desktop browser, letting you instantly run them across any tabs you select. "Until now, repeating an AI task -</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">3.</span>
+                <a href="https://www.theverge.com/ai-artificial-intelligence/911579/google-synthid-ai-watermarking-system-reverse-engineered" target="_blank">Has Google’s AI watermarking system been reverse-engineered?</a>
+                <span class="source">The Verge AI</span>
+            </div>
+            <p class="summary">A software developer claims to have reverse-engineered Google DeepMind's SynthID system, showing how AI watermarks can be stripped from generated images or manually inserted into other works. A claim that, according to Google, isn't true. The developer, going by the username Aloshdenny, has open-sou</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">4.</span>
+                <a href="https://techcrunch.com/2026/04/14/anthropics-rise-is-giving-some-openai-investors-second-thoughts/" target="_blank">Anthropic’s rise is giving some OpenAI investors second thoughts</a>
+                <span class="source">TechCrunch AI</span>
+            </div>
+            <p class="summary">One investor who has backed both companies told the FT that justifying OpenAI's recent round required assuming an IPO valuation of $1.2 trillion or more — making Anthropic's current $380 billion valuation look like the relative bargain.</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">5.</span>
+                <a href="https://techcrunch.com/2026/04/14/anthropic-co-founder-confirms-the-company-briefed-the-trump-administration-on-mythos/" target="_blank">Anthropic co-founder confirms the company briefed the Trump administration on Mythos</a>
+                <span class="source">TechCrunch AI</span>
+            </div>
+            <p class="summary">In an interview at the Semafor World Economy summit this week, Anthropic co-founder Jack Clark explained why the company was still engaged with the U.S. government while simultaneously suing them.</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">6.</span>
+                <a href="https://techcrunch.com/2026/04/14/max-hodaks-science-corp-is-preparing-to-place-its-first-sensor-in-a-human-brain/" target="_blank">Max Hodak’s Science Corp. is preparing to place its first sensor in a human brain</a>
+                <span class="source">TechCrunch AI</span>
+            </div>
+            <p class="summary">The device could help address multiple neurological conditions if it proves successful. One early use could be delivering gentle electrical stimulation to damaged brain or spinal cord cells to encourage healing.</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">7.</span>
+                <a href="https://www.technologyreview.com/2026/04/14/1134397/redefining-the-future-of-software-engineering/" target="_blank">Redefining the future of software engineering</a>
+                <span class="source">MIT Tech Review</span>
+            </div>
+            <p class="summary">Software engineering has experienced two seismic shifts this century. First was the rise of the open source movement, which gradually made code accessible to developers and engineers everywhere. Second, the adoption of development operations (DevOps) and agile methodologies took software from siloed</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">8.</span>
+                <a href="https://www.technologyreview.com/2026/04/14/1135847/the-download-state-of-ai-drones-protecting-bears/" target="_blank">The Download: the state of AI, and protecting bears with drones</a>
+                <span class="source">MIT Tech Review</span>
+            </div>
+            <p class="summary">This is today’s edition of The Download, our weekday newsletter that provides a daily dose of what’s going on in the world of technology. Want to understand the current state of AI? Check out these charts.  If you’re following AI news, you’re probably getting whiplash. AI is a gold rush. AI is a bub</p>
+        </div>
+        
+    </div>
+    
+    <div class="category">
+        <h2>💻 科技</h2>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">1.</span>
+                <a href="https://calpaterson.com/deps.html" target="_blank">Dependency cooldowns turn you into a free-rider</a>
+                <span class="source">Hacker News</span>
+            </div>
+            <p class="summary">Article URL: https://calpaterson.com/deps.html
+Comments URL: https://news.ycombinator.com/item?id=47773812
+Points: 22
+# Comments: 1</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">2.</span>
+                <a href="https://www.stylewarning.com/posts/not-all-elementary/" target="_blank">Not all elementary functions can be expressed with exp-minus-log</a>
+                <span class="source">Hacker News</span>
+            </div>
+            <p class="summary">Article URL: https://www.stylewarning.com/posts/not-all-elementary/
+Comments URL: https://news.ycombinator.com/item?id=47773788
+Points: 6
+# Comments: 0</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">3.</span>
+                <a href="https://www.reuters.com/legal/transactional/openai-investors-question-852-billion-valuation-strategy-shifts-ft-reports-2026-04-14/" target="_blank">OpenAI's $852B valuation faces investor scrutiny amid strategy shift, FT reports</a>
+                <span class="source">Hacker News</span>
+            </div>
+            <p class="summary">Article URL: https://www.reuters.com/legal/transactional/openai-investors-question-852-billion-valuation-strategy-shifts-ft-reports-2026-04-14/
+Comments URL: https://news.ycombinator.com/item?id=47773640
+Points: 84
+# Comments: 79</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">4.</span>
+                <a href="https://www.theverge.com/entertainment/912025/godzilla-minus-zero-teaser-trailer" target="_blank">Godzilla Minus Zero stomps through New York in first teaser trailer</a>
+                <span class="source">The Verge</span>
+            </div>
+            <p class="summary">*insert Godzilla screeching sound* Here's the very first look at the next big kaiju feature. Godzilla Minus Zero will continue the story of 2023's Godzilla Minus One, which returned the franchise to the more grounded tone established in the original film, and while the new teaser trailer doesn't sho</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">5.</span>
+                <a href="https://www.theverge.com/tech/912114/microsoft-surface-hub-displays-discontinued" target="_blank">Microsoft&#8217;s finally giving up on its massive Surface Hub touchscreen displays</a>
+                <span class="source">The Verge</span>
+            </div>
+            <p class="summary">Microsoft is reportedly ending production of its Surface Hub 3 collaborative office display and canceling plans for a Surface Hub 4, according to Windows Central. The extra-large digital whiteboard that included its own built-in PC was originally announced in 2015 ahead of the launch of Windows 10 a</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">6.</span>
+                <a href="https://www.theverge.com/tech/911888/netgear-router-ban-conditional-approval" target="_blank">The FCC just saved Netgear from its router ban for no obvious reason</a>
+                <span class="source">The Verge</span>
+            </div>
+            <p class="summary">The United States' foreign router ban didn't make a whole lot of sense, and today may not change that. The FCC has just granted Netgear a conditional approval to import its future consumer routers, cable modems, and cable gateways into the US through October 1st, 2027 - even though the company build</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">7.</span>
+                <a href="https://arstechnica.com/ai/2026/04/ukraines-military-robot-surge-aims-to-offset-drone-risks-to-humans/" target="_blank">Ukraine’s military robot surge aims to offset drone risks to humans</a>
+                <span class="source">Ars Technica</span>
+            </div>
+            <p class="summary">Ukraine is replacing more soldiers with robots in the battlefield kill zone.</p>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-title">
+                <span class="idx">8.</span>
+                <a href="https://arstechnica.com/gadgets/2026/04/sony-killing-features-for-antenna-set-top-box-users-of-bravia-smart-tvs-in-may/" target="_blank">Sony killing features for antenna, set-top box users of Bravia smart TVs in May</a>
+                <span class="source">Ars Technica</span>
+            </div>
+            <p class="summary">Some 2023 and 2024 models are also affected.</p>
+        </div>
+        
+    </div>
+    
+        <div class="category">
+            <h2>🖨️ 3D打印</h2>
+            <p class="empty">今日暂无相关新闻</p>
+        </div>
+        
+    
+    <div class="category">
+        <h2>📊 关注股票</h2>
+        <table class="stock-table">
+            <thead>
+                <tr><th>名称</th><th>代码</th><th>现价</th><th>涨跌</th><th></th></tr>
+            </thead>
+            <tbody>
+        <tr>
+            <td class="stock-name">🔴 腾讯</td>
+            <td class="stock-symbol">0700.HK</td>
+            <td class="stock-price">HK$501.00</td>
+            <td class="stock-change up">+7.80 (+1.58%)</td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="stock-name">⚪ 泡泡玛特</td>
+            <td class="stock-symbol">9992.HK</td>
+            <td class="stock-price">-- 0.00</td>
+            <td class="stock-change ">+0.00 (+0.00%)</td>
+            <td> <span class="error">（数据获取失败）</span></td>
+        </tr>
+        
+        <tr>
+            <td class="stock-name">🔴 茅台</td>
+            <td class="stock-symbol">600519.SS</td>
+            <td class="stock-price">¥1459.81</td>
+            <td class="stock-change up">+12.91 (+0.89%)</td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="stock-name">🟢 中国神华</td>
+            <td class="stock-symbol">601088.SS</td>
+            <td class="stock-price">¥45.63</td>
+            <td class="stock-change down">-0.03 (-0.07%)</td>
+            <td></td>
+        </tr>
+        </tbody>
+        </table>
+    </div>
+    
+  </div>
+  <div class="footer">
+    本简报由自动化系统生成 · 新闻版权归原作者所有
+  </div>
+</div>
+</body>
+</html>
